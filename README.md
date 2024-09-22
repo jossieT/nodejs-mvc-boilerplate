@@ -18,27 +18,6 @@ Welcome to **Node.js MVC Boilerplate**, a starter template for building structur
 - **Error Handling**: Centralized error handling for consistent API responses.
 - **Unit Testing**: Built-in structure for unit and integration tests.
 
-## 📂 Project Structure
-
-\`\`\`bash
-project-name/
-│
-├── config/              # Configuration files (e.g., environment variables)
-├── controllers/         # Handles request/response logic (Controllers in MVC)
-├── middlewares/         # Custom middleware functions
-├── models/              # Database models (Models in MVC)
-├── routes/              # API route definitions
-├── views/               # View templates (for rendering HTML, optional)
-├── services/            # Business logic and reusable service functions
-├── tests/               # Unit and integration tests
-├── utils/               # Helper and utility functions
-│
-├── .gitignore           # Files ignored by Git
-└── server.js            # Confugrations, DB conn
-├── package.json         # Project metadata and npm dependencies
-├── README.md            # This documentation file
-└── server.js            # Main application entry point
-\`\`\`
 
 ### MVC Overview
 
