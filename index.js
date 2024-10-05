@@ -15,7 +15,6 @@ mongoose.connect(config.db_connection, {
   logger.error('Error occured with erro message: ', error.message);
 });
 
-
 const server = httpServer.listen(config.port, () => {
   logger.info(`server listening on Port ${config.port}`);
 })

@@ -4,12 +4,12 @@ const httpStatus = require('http-status');
 
 
 const createUser = async (userBody) => {
-    
+
     const isEmailTaken = await User.isEmailTaken(userBody.email);
-    if(isEmailTaken){
+    if (isEmailTaken) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Email is already Taken");
     }
-    
+
     return await User.create(userBody);
 };
 
@@ -18,7 +18,13 @@ const getUser = async () => {
     return user;
 }
 
+const getUserByEmail = async (email) => {
+     const user = await User.findOne({ email });
+     return user;
+}
+
 module.exports = {
     createUser,
-    getUser
+    getUser,
+    getUserByEmail
 }

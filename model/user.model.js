@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bycrypt = require('bcryptjs');
 
 const userSchema = mongoose.Schema({
     name: {
@@ -34,6 +35,19 @@ const userSchema = mongoose.Schema({
 }, {
     timestamps: true,
 });
+
+userSchema.pre('save', async function (next) {
+    const user = this;
+    if(user.isModified('password')) {
+        user.password = await bycrypt.hash(user.password, 8);
+    }
+    next();
+});
+
+userSchema.methods.isPasswordMatch = async function (password) {
+    const user = this;
+    return await bycrypt.compare(password, user.password);
+}
 
 userSchema.statics.isEmailTaken = async function(email){
     const user = await this.findOne({ email });
