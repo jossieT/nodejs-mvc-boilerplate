@@ -4,18 +4,24 @@ const httpStatus = require('http-status');
 
 const register = catchAsync( async (req, res) => {
     const user = await userService.createUser(req.body);
-    const token = await tokenService.generateAuthToken(user._id);
+    const token = await tokenService.generateAuthTokens(user.id);
     res.status(httpStatus.CREATED).send({success: true, message: "user registration successful", user, token});
 });
 
 const login = catchAsync( async (req, res) => {
     const { email, password } = req.body;
     const user = await authService.login(email, password);
-    const token = await tokenService.generateAuthToken(user._id);
+    const token = await tokenService.generateAuthTokens(user.id);
     res.status(httpStatus.OK).send({user, token});
 });
+
+const refreshToken = catchAsync(async (req, res) => {
+    const tokens = await authService.refreshAuthToken(req.body.refreshToken);
+    res.status(httpStatus.OK).send({ ...tokens });
+  });
 
 module.exports = { 
     register,
     login,
+    refreshToken,
  };

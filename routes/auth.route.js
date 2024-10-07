@@ -7,10 +7,21 @@ const { authController } = require('../controller');
 
 router.post('/auth/register',
      validate(userValidation.createUserSchema)
-    ,authController.register);
+    ,authController.register
+);
 
 router.post('/auth/login',
         validate(authValidation.loginSchema)
-       ,authController.login);
+       ,authController.login
+    );
+
+router.post(
+'/auth/refresh-token',
+validate(authValidation.refreshTokenSchema),
+authController.refreshToken
+      );
+  
+  
+  
 
 module.exports = router;
