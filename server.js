@@ -8,7 +8,8 @@ const morgan = require('./config/morgan');
 const passport = require('passport');
 const { jwtStrategy } = require('./config/passport');
 const { swaggerDocs } = require('./swagger');
-const {xss} = require("express-xss-sanitizer");
+//const { xss } = require("express-xss-sanitizer");
+const xssClean = require('xss-clean');
 const helmet = require('helmet');
 
 //const bodyParser = require('body-parser');
@@ -21,14 +22,15 @@ app.use(express.json());
 // Initialize Swagger
 swaggerDocs(app);
 //Security
-app.use(xss());
+app.use(xssClean());
 app.use(helmet.contentSecurityPolicy({
     directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
         fontSrc: ["'self'", "'fonts.gstatic.com'"],
-    }
+    },
+    reportOnly: true,
 }))
 
 //routes
