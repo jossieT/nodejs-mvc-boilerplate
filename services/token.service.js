@@ -32,6 +32,7 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
 
  
 const verifyToken = async (token, type) => {
+  try {
   const payload = jwt.verify(token, config.jwt.secret);
   const tokenDoc = await Token.findOne({
     token,
@@ -43,6 +44,9 @@ const verifyToken = async (token, type) => {
     throw new Error('Token not found');
   }
   return tokenDoc;
+} catch (error) {
+  throw new Error('Invalid token'); // Handle verification errors
+}
 };
 
 const generateAuthTokens = async (userId) => {

@@ -4,6 +4,7 @@ const http = require('http');
 //const bodyParser = require('body-parser');
 const app = require('./server');
 const logger = require('./config/logger');
+const { swaggerDocs } = require('./swagger');
 
 const httpServer = http.createServer(app);
 
@@ -15,9 +16,17 @@ mongoose.connect(config.db_connection, {
   logger.error('Error occured with erro message: ', error.message);
 });
 
+
+
 const server = httpServer.listen(config.port, () => {
   logger.info(`server listening on Port ${config.port}`);
-})
+});
+
+swaggerDocs(app, config.port);
+// Move swaggerDocs outside of the server.listen callback
+
+
+
 
 const exitHandler = () => {
   if(server) {
@@ -36,9 +45,10 @@ const unExpectedErrorHandler = (error) => {
 }
 
 process.on("uncaughtException", unExpectedErrorHandler);
+
 process.on("unhandledRejection", unExpectedErrorHandler);
 process.on("SIGTERM", () => {
-  logger.info('SIGTERM Recieved');
+  logger.info('SIGTERM Received');
   if(server) {
     server.close();
   }
