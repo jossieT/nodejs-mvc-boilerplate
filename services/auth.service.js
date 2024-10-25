@@ -5,45 +5,41 @@ const { tokenService } = require('.');
 const { tokenTypes } = require('../config/tokens');
 const { RateLimiterMongo } = require('rate-limiter-flexible');
 const mongoose = require('mongoose');
+const config = require('../config/config');
 
-const maxAttemptByIpUsername = 100;
-const maxAttemptsPerDay = 10;
-const maxAttemptsPerEmail = 50;
 
 const login = async (email, password, ipAddr) => {
     
- 
-
   const emailIpBruteLimiter = new RateLimiterMongo({
-    storeClient: mongoose.connection,
-    points: maxAttemptByIpUsername,
-    duration: 60 * 10,
-    blockDuration: 60 * 60 * 24,
-    dbName: "blogstest"
-  });
-
-  const slowerBruteLimiter = new RateLimiterMongo({
-    storeClient: mongoose.connection,
-    points: maxAttemptsPerDay,
-    duration: 60 * 60 * 24,
-    blockDuration: 60 * 60 * 24,
-    dbName: "blogstest"
-  });
-
-  const emailBruteLimiter = new RateLimiterMongo({
-    storeClient: mongoose.connection,
-    points: maxAttemptsPerEmail,
-    duration: 60 * 60 * 24,
-    blockDuration: 60 * 60 * 24,
-    dbName: "blogstest"
-  });
+    storeClient:mongoose.connection,
+    points:config.rateLimiter.maxAttemptsByIpUsername,
+    duration:60*10,
+    blockDuration:60*60*24,
+    dbName:"blogstest"
+  })
   
-  const promises = [slowerBruteLimiter.consume(ipAddr)];
+  const slowerBruteLimiter = new RateLimiterMongo({
+    storeClient:mongoose.connection,
+    points:config.rateLimiter.maxAttemptsPerDay,
+    duration:60*60*24,
+    blockDuration:60*60*24,
+    dbName:"blogstest"
+  })
+  
+  const emailBruteLimiter = new RateLimiterMongo({
+  storeClient:mongoose.connection,
+  points:config.rateLimiter.maxAttemptsPerEmail,
+  duration:60*60*24,
+  blockDuration:60*60*24,
+  dbName:"blogstest"
+  })
+  
+  const promises = [slowerBruteLimiter.consume(ipAddr), emailBruteLimiter.consume(email),emailIpBruteLimiter.consume(`${email}_${ipAddr}`)];
   const user = await userService.getUserByEmail(email);
 
   if (!user || !(await user.isPasswordMatch(password))) {
-    user && promises.push([emailIpBruteLimiter.consume(`${email}_${ipAddr}`), 
-      emailBruteLimiter.consume(email)]);
+    // user && promises.push([emailIpBruteLimiter.consume(`${email}_${ipAddr}`), 
+    //   emailBruteLimiter.consume(email)]);
     await Promise.all(promises);
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
