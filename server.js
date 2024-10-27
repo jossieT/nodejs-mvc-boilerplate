@@ -12,6 +12,7 @@ const config = require('./config/config');
 //const { xss } = require("express-xss-sanitizer");
 const xssClean = require('xss-clean');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
 
 //const bodyParser = require('body-parser');
 const app = express();
@@ -25,7 +26,7 @@ swaggerDocs(app);
 //Security
 app.use(xssClean());
 app.use(helmet.contentSecurityPolicy(config.cspOptions));
-
+app.use(mongoSanitize());
 //routes
 app.use(blogRouter);
 app.use(authRouter);
