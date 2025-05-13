@@ -3,6 +3,7 @@
     "@meanie/mongoose-to-json": "^2.6.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -24,9 +25,13 @@
     "xss-clean": "^0.1.4"
   },
   "scripts": {
-    "start": " nodemon index.js"
+    "start": " nodemon index.js",
+    "lint": "eslint ."
   },
   "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0",
     "nodemon": "^3.1.4",
     "swagger-ui-express": "^5.0.1"
   }

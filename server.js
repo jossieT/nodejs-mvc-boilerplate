@@ -9,10 +9,12 @@ const passport = require('passport');
 const { jwtStrategy } = require('./config/passport');
 const { swaggerDocs } = require('./swagger');
 const config = require('./config/config');
+
 //const { xss } = require("express-xss-sanitizer");
 const xssClean = require('xss-clean');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
+const cors = require('cors');
 
 //const bodyParser = require('body-parser');
 const app = express();
@@ -21,6 +23,16 @@ app.use(morgan.successHandler);
 app.use(morgan.errorHandler);
 app.use(express.json());
 
+
+//enabling cross origin
+if (config.env === 'production') {
+    app.use(cors({ origin: 'url' }));
+    app.options('*', cors({ origin: 'url' }));
+  } else {
+    // enabling all cors
+    app.use(cors());
+    app.options('*', cors());
+  }
 // Initialize Swagger
 swaggerDocs(app);
 //Security

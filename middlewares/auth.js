@@ -6,6 +6,8 @@ const verifyCallBack = (req, resolve, reject) => async (err, user, info) => {
     if (err || info || !user) {
         return reject(new ApiError(httpStatus.UNAUTHORIZED, 'please authenticate'));
     }
+
+    //console.log("trying to login: ", req.user);
     req.user = user;
     resolve();
 };
