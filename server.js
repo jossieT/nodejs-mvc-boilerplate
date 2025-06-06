@@ -23,16 +23,15 @@ app.use(morgan.successHandler);
 app.use(morgan.errorHandler);
 app.use(express.json());
 
-
 //enabling cross origin
 if (config.env === 'production') {
-    app.use(cors({ origin: 'url' }));
-    app.options('*', cors({ origin: 'url' }));
-  } else {
-    // enabling all cors
-    app.use(cors());
-    app.options('*', cors());
-  }
+  app.use(cors({ origin: 'url' }));
+  app.options('*', cors({ origin: 'url' }));
+} else {
+  // enabling all cors
+  app.use(cors());
+  app.options('*', cors());
+}
 // Initialize Swagger
 swaggerDocs(app);
 //Security
@@ -43,7 +42,7 @@ app.use(mongoSanitize());
 app.use(blogRouter);
 app.use(authRouter);
 app.use((req, res, next) => {
-    next(new ApiError(httpStatus.NOT_FOUND, 'Not Found'));
+  next(new ApiError(httpStatus.NOT_FOUND, 'Not Found'));
 });
 
 app.use(passport.initialize());

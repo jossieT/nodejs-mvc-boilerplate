@@ -3,8 +3,6 @@ const config = require('./config');
 const { tokenTypes } = require('./tokens');
 const { userService } = require('../services');
 
-
-
 const jwtOptions = {
   secretOrKey: config.jwt.secret,
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -29,4 +27,4 @@ const jwtStrategy = new JwtStrategy(jwtOptions, jwtVerify);
 
 module.exports = {
   jwtStrategy,
-}
+};

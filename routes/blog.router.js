@@ -48,8 +48,12 @@ const router = express.Router();
  *         description: Server error
  */
 
-router.post('/blog', auth, validate(blogValidation.createBlogSchema), blogController.createBlog);
-
+router.post(
+  '/blog',
+  auth,
+  validate(blogValidation.createBlogSchema),
+  blogController.createBlog,
+);
 
 router.get('/blog', auth, blogController.getBlog);
 

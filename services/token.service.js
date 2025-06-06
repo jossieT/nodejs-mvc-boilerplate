@@ -4,7 +4,6 @@ const config = require('./../config/config');
 const { tokenTypes } = require('./../config/tokens');
 const { Token } = require('../model/token.model');
 
- 
 // Function to generate a JWT for a given user ID
 const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
   // Payload includes subject (user ID), issued at time, expiration time, and token type
@@ -14,7 +13,7 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
     exp: expires.unix(), // Expires in 30 minutes
     type, // Token type: access
   };
- 
+
   // Sign the token with the secret key
   return jwt.sign(payload, secret);
 };
@@ -30,47 +29,51 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
   return tokenDoc;
 };
 
- 
 const verifyToken = async (token, type) => {
   try {
-  const payload = jwt.verify(token, config.jwt.secret);
-  const tokenDoc = await Token.findOne({
-    token,
-    user: payload.sub,
-    type,
-    blacklisted: false,
-  });
-  if (!tokenDoc) {
-    throw new Error('Token not found');
+    const payload = jwt.verify(token, config.jwt.secret);
+    const tokenDoc = await Token.findOne({
+      token,
+      user: payload.sub,
+      type,
+      blacklisted: false,
+    });
+    if (!tokenDoc) {
+      throw new Error('Token not found');
+    }
+    return tokenDoc;
+  } catch (error) {
+    throw new Error('Invalid token:', error.message); // Handle verification errors
   }
-  return tokenDoc;
-} catch (error) {
-  throw new Error('Invalid token'); // Handle verification errors
-}
 };
 
 const generateAuthTokens = async (userId) => {
   //console.log(config.jwt.accessExpirationMinutes);
   const accessTokenExpires = dayjs().add(
     config.jwt.accessExpirationMinutes,
-    'minutes'
+    'minutes',
   );
   const accessToken = generateToken(
     userId,
     accessTokenExpires,
-    tokenTypes.ACCESS
+    tokenTypes.ACCESS,
   );
   const refreshTokenExpires = dayjs().add(
     config.jwt.refreshExpirationDays,
-    'days'
+    'days',
   );
   const refreshToken = generateToken(
     userId,
     refreshTokenExpires,
-    tokenTypes.REFRESH
+    tokenTypes.REFRESH,
   );
 
-  await saveToken(refreshToken, userId, refreshTokenExpires, tokenTypes.REFRESH);
+  await saveToken(
+    refreshToken,
+    userId,
+    refreshTokenExpires,
+    tokenTypes.REFRESH,
+  );
   return {
     access: {
       token: accessToken,
@@ -87,5 +90,5 @@ module.exports = {
   generateToken,
   generateAuthTokens,
   saveToken,
-  verifyToken
+  verifyToken,
 };

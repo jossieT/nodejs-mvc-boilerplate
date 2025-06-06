@@ -7,38 +7,40 @@ const { RateLimiterMongo } = require('rate-limiter-flexible');
 const mongoose = require('mongoose');
 const config = require('../config/config');
 
-
 const login = async (email, password, ipAddr) => {
-    
   const emailIpBruteLimiter = new RateLimiterMongo({
-    storeClient:mongoose.connection,
-    points:config.rateLimiter.maxAttemptsByIpUsername,
-    duration:60*10,
-    blockDuration:60*60*24,
-    dbName:"blogstest"
-  })
-  
+    storeClient: mongoose.connection,
+    points: config.rateLimiter.maxAttemptsByIpUsername,
+    duration: 60 * 10,
+    blockDuration: 60 * 60 * 24,
+    dbName: 'blogstest',
+  });
+
   const slowerBruteLimiter = new RateLimiterMongo({
-    storeClient:mongoose.connection,
-    points:config.rateLimiter.maxAttemptsPerDay,
-    duration:60*60*24,
-    blockDuration:60*60*24,
-    dbName:"blogstest"
-  })
-  
+    storeClient: mongoose.connection,
+    points: config.rateLimiter.maxAttemptsPerDay,
+    duration: 60 * 60 * 24,
+    blockDuration: 60 * 60 * 24,
+    dbName: 'blogstest',
+  });
+
   const emailBruteLimiter = new RateLimiterMongo({
-  storeClient:mongoose.connection,
-  points:config.rateLimiter.maxAttemptsPerEmail,
-  duration:60*60*24,
-  blockDuration:60*60*24,
-  dbName:"blogstest"
-  })
-  
-  const promises = [slowerBruteLimiter.consume(ipAddr), emailBruteLimiter.consume(email),emailIpBruteLimiter.consume(`${email}_${ipAddr}`)];
+    storeClient: mongoose.connection,
+    points: config.rateLimiter.maxAttemptsPerEmail,
+    duration: 60 * 60 * 24,
+    blockDuration: 60 * 60 * 24,
+    dbName: 'blogstest',
+  });
+
+  const promises = [
+    slowerBruteLimiter.consume(ipAddr),
+    emailBruteLimiter.consume(email),
+    emailIpBruteLimiter.consume(`${email}_${ipAddr}`),
+  ];
   const user = await userService.getUserByEmail(email);
 
   if (!user || !(await user.isPasswordMatch(password))) {
-    // user && promises.push([emailIpBruteLimiter.consume(`${email}_${ipAddr}`), 
+    // user && promises.push([emailIpBruteLimiter.consume(`${email}_${ipAddr}`),
     //   emailBruteLimiter.consume(email)]);
     await Promise.all(promises);
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
@@ -50,7 +52,7 @@ const refreshAuthToken = async (refreshToken) => {
   try {
     const refreshTokenDoc = await tokenService.verifyToken(
       refreshToken,
-      tokenTypes.REFRESH
+      tokenTypes.REFRESH,
     );
     const user = await userService.getUserById(refreshTokenDoc.user);
     if (!user) {
@@ -67,4 +69,4 @@ const refreshAuthToken = async (refreshToken) => {
 module.exports = {
   login,
   refreshAuthToken,
-}
+};
