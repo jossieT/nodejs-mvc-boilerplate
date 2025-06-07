@@ -5,14 +5,12 @@ const httpStatus = require('http-status');
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
   const token = await tokenService.generateAuthTokens(user.id);
-  res
-    .status(httpStatus.CREATED)
-    .send({
-      success: true,
-      message: 'user registration successful',
-      user,
-      token,
-    });
+  res.status(httpStatus.CREATED).send({
+    success: true,
+    message: 'user registration successful',
+    user,
+    token,
+  });
 });
 
 const login = catchAsync(async (req, res) => {
