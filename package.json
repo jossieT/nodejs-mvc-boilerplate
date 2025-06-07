@@ -30,7 +30,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check **/*.js",
-    "prettier:fix": "prettier --write **/*.js"
+    "prettier:fix": "prettier --write **/*.js",
+    "lint-staged": "lint-staged",
+    "prepare": "husky intall"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
@@ -39,6 +41,8 @@
     "eslint-plugin-prettier": "^5.0.0-alpha.2",
     "eslint-plugin-security": "^3.0.1",
     "globals": "^15.11.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0",
     "nodemon": "^3.1.4",
     "prettier": "^3.5.3",
     "swagger-ui-express": "^5.0.1"
