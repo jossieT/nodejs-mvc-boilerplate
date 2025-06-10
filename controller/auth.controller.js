@@ -1,6 +1,13 @@
-const { userService, tokenService, authService } = require('../services');
+//const { userService, tokenService, authService } = require('../services');
 const catchAsync = require('../utils/catchAsync');
 const httpStatus = require('http-status');
+const { Token } = require('../model/token.model');
+const { tokenTypes } = require('../config/tokens');
+const config = require('../config/config');
+const TokenService = require('jose-token-service');
+
+const tokenService = new TokenService(Token, tokenTypes, config);
+const { userService, authService } = require('../services');
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);

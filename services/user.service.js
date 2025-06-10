@@ -1,6 +1,7 @@
 const User = require('../model/user.model');
 const { ApiError } = require('../utils/ApiError');
 const httpStatus = require('http-status');
+const EventEmitter = require('../utils/EventEmitter');
 
 const createUser = async (userBody) => {
   const isEmailTaken = await User.isEmailTaken(userBody.email);
@@ -8,7 +9,10 @@ const createUser = async (userBody) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email is already Taken');
   }
 
-  return await User.create(userBody);
+  const user = await User.create(userBody);
+  // Send welcome email
+  EventEmitter.emit('signup', user);
+  return user;
 };
 
 const getUser = async () => {

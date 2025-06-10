@@ -13,10 +13,12 @@
     "helmet": "^8.0.0",
     "http-status": "^1.7.4",
     "joi": "^17.13.3",
+    "jose-token-service": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.9.0",
     "mongoose": "^8.5.2",
     "morgan": "^1.10.0",
+    "nodemailer": "^7.0.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "rate-limiter-flexible": "^5.0.3",
@@ -26,7 +28,7 @@
     "xss-clean": "^0.1.4"
   },
   "scripts": {
-    "start": " nodemon index.js",
+    "start": "nodemon index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check **/*.js",

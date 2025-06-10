@@ -1,32 +1,12 @@
-const mongoose = require('mongoose');
 const config = require('./config/config');
 const http = require('http');
 //const bodyParser = require('body-parser');
-const app = require('./server');
+const express = require('express');
 const logger = require('./config/logger');
+const loader = require('./loaders');
 const { swaggerDocs } = require('./swagger');
 
-const httpServer = http.createServer(app);
-
-mongoose
-  .connect(config.db_connection, {
-    useNewUrlParser: true,
-  })
-  .then(() => {
-    logger.info('mongoDB connection successful');
-  })
-  .catch((error) => {
-    logger.error('Error occured with erro message: ', error.message);
-  });
-
-const server = httpServer.listen(config.port, () => {
-  logger.info(`server listening on Port ${config.port}`);
-});
-
-swaggerDocs(app, config.port);
-// Move swaggerDocs outside of the server.listen callback
-
-const exitHandler = () => {
+const exitHandler = (server) => {
   if (server) {
     server.close(() => {
       logger.info('Server CLosed');
@@ -37,17 +17,30 @@ const exitHandler = () => {
   }
 };
 
-const unExpectedErrorHandler = (error) => {
-  logger.error(error);
-  exitHandler();
+const unExpectedErrorHandler = (server) => {
+  return function (error) {
+    logger.error(error);
+    exitHandler(server);
+  };
 };
 
-process.on('uncaughtException', unExpectedErrorHandler);
+const startServer = async () => {
+  const app = express();
+  await loader(app);
+  const httpServer = http.createServer(app);
+  const server = httpServer.listen(config.port, () => {
+    logger.info(`server listening on Port ${config.port}`);
+  });
+  swaggerDocs(app, config.port);
+  // Move swaggerDocs outside of the server.listen callback
+  process.on('uncaughtException', unExpectedErrorHandler(server));
+  process.on('unhandledRejection', unExpectedErrorHandler(server));
+  process.on('SIGTERM', () => {
+    logger.info('SIGTERM Received');
+    if (server) {
+      server.close();
+    }
+  });
+};
 
-process.on('unhandledRejection', unExpectedErrorHandler);
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM Received');
-  if (server) {
-    server.close();
-  }
-});
+startServer();
